@@ -1,7 +1,7 @@
 name: Test Project
 on: [push, pull_request]
 jobs:
-  test-laravel-project:
+  run-test:
     name: Run Tests of project
     runs-on: ubuntu-latest
 
@@ -18,6 +18,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
 
       - name: Get composer cache directory
         id: composer-cache
@@ -63,7 +68,7 @@ jobs:
   build-assets:
     name: Build JS & CSS
     runs-on: ubuntu-latest
-    needs: test-laravel-project
+    needs: run-test
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v2
@@ -85,3 +90,50 @@ jobs:
         with:
           name: assets
           path: public
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: [run-test, build-assets]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache composer cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install composer dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Download built assets
+        uses: actions/download-artifact@v2
+        with:
+          name: assets
+          path: public
+
+      - name: Deploy
+        uses: deployphp/action@master
+        env:
+          DOT_ENV: ${{ secrets.DOT_ENV }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+        with:
+          private-key: ${{ secrets.SSH_PKEY }}
+          known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          dep: deploy production --tag=${{ env.GITHUB_REF }} -vvv
