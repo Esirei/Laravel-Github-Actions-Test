@@ -18,7 +18,7 @@ set('rsync_src', function () {
     return __DIR__;
 });
 
-set('writable_mode', 'chmod');
+set('writable_mode', 'chown');
 
 // Configuring the rsync exclusions.
 // You'll want to exclude anything that you don't want on the production server.
