@@ -20,6 +20,8 @@ set('rsync_src', function () {
 
 set('writable_mode', 'chmod');
 set('writable_recursive', true);
+set('writable_chmod_recursive', true);
+set('writable_chmod_mode', 777);
 //set('http_user', 'www-data');
 
 // Configuring the rsync exclusions.
