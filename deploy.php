@@ -19,6 +19,8 @@ set('rsync_src', function () {
 });
 
 set('writable_mode', 'chown');
+set('writable_recursive', true);
+set('http_user', 'www-data');
 
 // Configuring the rsync exclusions.
 // You'll want to exclude anything that you don't want on the production server.
