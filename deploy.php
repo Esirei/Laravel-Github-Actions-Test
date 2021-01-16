@@ -67,7 +67,7 @@ task('deploy', [
     'rsync', // Deploy code & built assets
     'deploy:secrets', // Deploy secrets
     'deploy:shared',
-    'deploy:vendors',
+//    'deploy:vendors',
     'deploy:writable',
     'artisan:storage:link', // |
     'artisan:view:cache',   // |
