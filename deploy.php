@@ -32,7 +32,7 @@ add('rsync', [
         '.git',
         '.github',
         'deploy.php',
-        '/storage/',
+//        '/storage/',
         '/vendor/',
         '/node_modules/',
     ],
