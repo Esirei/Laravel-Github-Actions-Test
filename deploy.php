@@ -18,9 +18,9 @@ set('rsync_src', function () {
     return __DIR__;
 });
 
-set('writable_mode', 'chown');
+set('writable_mode', 'chmod');
 set('writable_recursive', true);
-set('http_user', 'www-data');
+//set('http_user', 'www-data');
 
 // Configuring the rsync exclusions.
 // You'll want to exclude anything that you don't want on the production server.
@@ -67,7 +67,7 @@ task('deploy', [
     'rsync', // Deploy code & built assets
     'deploy:secrets', // Deploy secrets
     'deploy:shared',
-//    'deploy:vendors',
+    'deploy:vendors',
     'deploy:writable',
     'artisan:storage:link', // |
     'artisan:view:cache',   // |
