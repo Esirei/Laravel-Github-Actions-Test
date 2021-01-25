@@ -19,10 +19,9 @@ set('rsync_src', function () {
 });
 
 set('writable_mode', 'chmod');
-set('writable_recursive', true);
-set('writable_chmod_recursive', true);
-set('writable_chmod_mode', 777);
-//set('http_user', 'www-data');
+set('writable_chmod_mode', '0775');
+set('writable_chmod_recursive', false);
+set('http_user', 'www-data');
 
 // Configuring the rsync exclusions.
 // You'll want to exclude anything that you don't want on the production server.
