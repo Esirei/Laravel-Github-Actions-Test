@@ -55,7 +55,7 @@ set('user', function () {
 // Hosts
 host(getenv('SSH_HOST'))
     ->stage('production')
-    ->user(getenv('SSH_USER'))
+    ->user('{{user}}')
     ->port(getenv('SSH_PORT'))
     ->set('deploy_path', '~/{{application}}');
 
