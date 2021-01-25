@@ -20,8 +20,11 @@ set('rsync_src', function () {
 
 set('writable_mode', 'chmod');
 set('writable_chmod_mode', '0775');
+// We don't want it to be recursive else deployment will fail once it encounters www-data owned/created files.
 set('writable_chmod_recursive', false);
 set('http_user', 'www-data');
+// we don't want to disable sudo password request on ssh_user so
+// chown or chgrp will manually be granted to www-data on the server after the 1st deployment.
 
 // Configuring the rsync exclusions.
 // You'll want to exclude anything that you don't want on the production server.
@@ -52,7 +55,7 @@ set('user', function () {
 // Hosts
 host(getenv('SSH_HOST'))
     ->stage('production')
-    ->user(getenv('SSH_USER'))
+    ->user('{{user}}')
     ->port(getenv('SSH_PORT'))
     ->set('deploy_path', '~/{{application}}');
 
