@@ -85,22 +85,46 @@ task('deploy', [
     'cleanup',
 ]);
 
-function scp($source, $destination) {
+function scp($source, $destination, $options = []) {
     $host = \Deployer\Task\Context::get()->getHost();
     $port = $host->getPort();
     $user = $host->getUser();
     $hostname = $host->getRealHostname();
-    runLocally("scp -rC -P $port $source $user@$hostname:$destination");
+    runLocally("scp -rC -P $port $source $user@$hostname:$destination", $options);
 }
 
 desc('Upload the application using scp');
 task('scp:deploy', function () {
-    scp(__DIR__, '{{release_path}}');
+//    $src = __DIR__ . '/deploy';
+//    runLocally("mkdir -p $src");
+
+    $source = '/*';
+
+    $excludes = [
+        '*.env',
+        '*.git',
+        '*.github',
+        'deploy.php',
+        'vendor',
+        'node_modules'
+    ];
+
+    $excluded = '';
+    foreach ($excludes as $key => $exclude) {
+        $excluded.= ($key === 0) ? $exclude : "|$exclude";
+    }
+
+    if (!empty($excluded)) {
+        runLocally('shopt -s extglob');
+        $source = "/!($excluded)";
+    }
+
+    scp(__DIR__ . $source, '{{release_path}}', ['timeout' => 3600]);
 });
 
 desc('Upload the application secrets');
 task('scp:deploy-secrets', function () {
     file_put_contents(__DIR__ . '/.env', getenv('DOT_ENV'));
-    scp('.env', '{{deploy_path}}/shared');
+    scp(__DIR__ . '/.env', '{{deploy_path}}/shared');
 });
 
