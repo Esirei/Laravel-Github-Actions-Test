@@ -5,7 +5,7 @@ require 'recipe/laravel.php';
 require 'recipe/rsync.php';
 
 // Project name
-set('application', 'laravel_github_actions_test');
+set('application', 'actions_test_scp');
 
 // Project repository
 set('repository', 'git@github.com:Esirei/Laravel-Github-Actions-Test.git');
@@ -68,8 +68,10 @@ task('deploy', [
     'deploy:prepare',
     'deploy:lock',
     'deploy:release',
-    'rsync', // Deploy code & built assets
-    'deploy:secrets', // Deploy secrets
+//    'rsync', // Deploy code & built assets
+//    'deploy:secrets', // Deploy secrets
+    'scp:deploy',
+    'scp:deploy-secrets',
     'deploy:shared',
     'deploy:vendors',
     'deploy:writable',
@@ -82,4 +84,19 @@ task('deploy', [
     'deploy:unlock',
     'cleanup',
 ]);
+
+function scp($source, $destination) {
+    runLocally("scp -rC -P {{port}} {$source} {{user}}@{{hostname}}:{$destination}");
+}
+
+desc('Upload the application using scp');
+task('scp:deploy', function () {
+    scp(__DIR__, '{{release_path}}');
+});
+
+desc('Upload the application secrets');
+task('scp:deploy-secrets', function () {
+    file_put_contents(__DIR__ . '/.env', getenv('DOT_ENV'));
+    upload('.env', '{{deploy_path}}/shared');
+});
 
