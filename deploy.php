@@ -86,7 +86,11 @@ task('deploy', [
 ]);
 
 function scp($source, $destination) {
-    runLocally("scp -rC -P {{port}} {$source} {{user}}@{{hostname}}:{$destination}");
+    $host = \Deployer\Task\Context::get()->getHost();
+    $port = $host->getPort();
+    $user = $host->getUser();
+    $hostname = $host->getRealHostname();
+    runLocally("scp -rC -P $port $source $user@$hostname:$destination");
 }
 
 desc('Upload the application using scp');
@@ -97,6 +101,6 @@ task('scp:deploy', function () {
 desc('Upload the application secrets');
 task('scp:deploy-secrets', function () {
     file_put_contents(__DIR__ . '/.env', getenv('DOT_ENV'));
-    upload('.env', '{{deploy_path}}/shared');
+    scp('.env', '{{deploy_path}}/shared');
 });
 
