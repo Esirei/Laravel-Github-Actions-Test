@@ -115,7 +115,7 @@ task('scp:deploy', function () {
     }
 
     if (!empty($excluded)) {
-        runLocally('shopt -s extglob');
+//        runLocally('shopt -s extglob');
         $source = "/!($excluded)";
     }
 
