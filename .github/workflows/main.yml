@@ -132,14 +132,26 @@ jobs:
           name: assets
           path: public
 
+#      - name: Deploy
+#        uses: deployphp/action@master
+#        env:
+#          DOT_ENV: ${{ secrets.DOT_ENV }}
+#          SSH_HOST: ${{ secrets.SSH_HOST }}
+#          SSH_USER: ${{ secrets.SSH_USER }}
+#          SSH_PORT: ${{ secrets.SSH_PORT }}
+#        with:
+#          private-key: ${{ secrets.SSH_PKEY }}
+#          known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+#          dep: deploy production --tag=${{ env.GITHUB_REF }} -vvv
+
       - name: Deploy
-        uses: deployphp/action@master
+        uses: atymic/deployer-php-action@master
         env:
           DOT_ENV: ${{ secrets.DOT_ENV }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
         with:
-          private-key: ${{ secrets.SSH_PKEY }}
-          known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-          dep: deploy production --tag=${{ env.GITHUB_REF }} -vvv
+          ssh-private-key: ${{ secrets.SSH_PKEY }}
+          ssh-known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: dep deploy production --tag=${{ env.GITHUB_REF }} -vvv
