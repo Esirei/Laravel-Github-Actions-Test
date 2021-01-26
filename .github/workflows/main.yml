@@ -144,14 +144,16 @@ jobs:
 #          known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 #          dep: deploy production --tag=${{ env.GITHUB_REF }} -vvv
 
-      - name: Deploy
+      - name: Setup Deployer
         uses: atymic/deployer-php-action@master
+        with:
+          ssh-private-key: ${{ secrets.SSH_PKEY }}
+          ssh-known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Deploy
         env:
           DOT_ENV: ${{ secrets.DOT_ENV }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
-        with:
-          ssh-private-key: ${{ secrets.SSH_PKEY }}
-          ssh-known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
         run: dep deploy production --tag=${{ env.GITHUB_REF }} -vvv
