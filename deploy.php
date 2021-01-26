@@ -100,24 +100,24 @@ task('scp:deploy', function () {
 
     $source = '/*';
 
-    $excludes = [
-        '*.env',
-        '*.git',
-        '*.github',
-        'deploy.php',
-        'vendor',
-        'node_modules'
-    ];
-
-    $excluded = '';
-    foreach ($excludes as $key => $exclude) {
-        $excluded.= ($key === 0) ? $exclude : "|$exclude";
-    }
-
-    if (!empty($excluded)) {
-//        runLocally('shopt -s extglob');
-        $source = "/!($excluded)";
-    }
+//    $excludes = [
+//        '*.env',
+//        '*.git',
+//        '*.github',
+//        'deploy.php',
+//        'vendor',
+//        'node_modules'
+//    ];
+//
+//    $excluded = '';
+//    foreach ($excludes as $key => $exclude) {
+//        $excluded.= ($key === 0) ? $exclude : "|$exclude";
+//    }
+//
+//    if (!empty($excluded)) {
+////        runLocally('shopt -s extglob');
+//        $source = "/!($excluded)";
+//    }
 
     scp(__DIR__ . $source, '{{release_path}}', ['timeout' => 3600]);
 });
